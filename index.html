@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>!!! SYSTEM COMPROMISED !!!</title>
+    <style>
+        /* 基礎設置保持不變 */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            overflow: hidden;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        #matrix { position: absolute; top: 0; left: 0; z-index: 1; }
+
+        .screen-shake { animation: shake 0.1s infinite; } /* 抖得更厲害一點 */
+
+        @keyframes shake {
+            0% { transform: translate(3px, 2px) rotate(0deg); }
+            20% { transform: translate(-3px, -4px) rotate(-2deg); }
+            40% { transform: translate(-5px, 0px) rotate(2deg); }
+            60% { transform: translate(0px, 4px) rotate(0deg); }
+            80% { transform: translate(-2px, -2px) rotate(2deg); }
+            100% { transform: translate(3px, -4px) rotate(-2deg); }
+        }
+
+        .critical-warning {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ff0000;
+            font-size: 4rem;
+            font-weight: bold;
+            text-align: center;
+            text-shadow: 2px 2px 0 #000, -2px -2px 0px #fff, 0 0 20px #ff0000;
+            z-index: 100;
+            white-space: nowrap;
+            pointer-events: none;
+            animation: glitch 0.2s infinite;
+            display: none; /* 初始隱藏 */
+        }
+
+        @keyframes glitch {
+            0% { color: #ff0000; transform: translate(-50%, -50%); }
+            50% { color: #fff; transform: translate(-52%, -48%); }
+            100% { color: #ff0000; transform: translate(-48%, -52%); }
+        }
+
+        .popup {
+            position: absolute;
+            background-color: #000;
+            border: 3px solid #ff0000;
+            box-shadow: 0 0 15px #ff0000;
+            color: #ff0000;
+            padding: 15px;
+            z-index: 50;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .popup-header {
+            background: #ff0000; color: #000; margin: -15px -15px 15px -15px; padding: 5px; text-align: left;
+        }
+
+        /* 誘餌按鈕樣式 */
+        #start-btn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px 40px;
+            font-size: 2rem;
+            background-color: red;
+            color: white;
+            border: none;
+            cursor: pointer;
+            z-index: 999;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            box-shadow: 0 0 20px red;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 誘餌按鈕，必須點擊才能發聲 -->
+    <button id="start-btn">CLICK TO CLAIM FREE BITCOIN</button>
+
+    <canvas id="matrix"></canvas>
+    <div class="critical-warning" id="warning-text">
+        SYSTEM COMPROMISED<br>
+        <span style="font-size: 2rem; color: #ffff00;">INITIATING SELF-DESTRUCT</span>
+    </div>
+    <div id="popups-container"></div>
+
+    <script>
+        const startBtn = document.getElementById('start-btn');
+        let audioCtx;
+
+        // 核心啟動函數
+        startBtn.addEventListener('click', () => {
+            // 1. 隱藏按鈕，顯示警告，開啟抖動
+            startBtn.style.display = 'none';
+            document.getElementById('warning-text').style.display = 'block';
+            document.body.classList.add('screen-shake');
+
+            // 2. 請求全螢幕 (讓他們更難關掉)
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen().catch(err => console.log(err));
+            }
+
+            // 3. 攔截關閉標籤頁 (會彈出瀏覽器默認的確認離開視窗)
+            window.addEventListener('beforeunload', function (e) {
+                e.preventDefault();
+                e.returnValue = 'YOUR FILES ARE BEING ENCRYPTED. ARE YOU SURE YOU WANT TO LEAVE?';
+            });
+
+            // 4. 啟動 Web Audio API 爆音製造機
+            startEarRape();
+
+            // 5. 啟動視覺特效
+            initVisuals();
+        });
+
+        function startEarRape() {
+            // 初始化音頻上下文
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            
+            // 創建振盪器 (產生聲音) 和增益節點 (控制音量)
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+
+            // 使用方波 (Square wave)，這是最刺耳、最像電音的波形
+            oscillator.type = 'square'; 
+            
+            // 將音量調到極致 (產生破音/爆音效果)
+            gainNode.gain.value = 10; 
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            oscillator.start();
+
+            // 讓聲音頻率瘋狂隨機跳動，產生警報崩潰感
+            setInterval(() => {
+                // 頻率在 200Hz 到 3000Hz 之間狂跳
+                const randomFreq = Math.random() * 2800 + 200;
+                oscillator.frequency.setValueAtTime(randomFreq, audioCtx.currentTime);
+            }, 50); // 每 50 毫秒變換一次音調
+        }
+
+        function initVisuals() {
+            // --- 代碼雨邏輯 (跟之前一樣) ---
+            const canvas = document.getElementById('matrix');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            const alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ$#@%&*!';
+            const fontSize = 16;
+            const columns = canvas.width / fontSize;
+            const rainDrops = Array(Math.floor(columns)).fill(1);
+
+            setInterval(() => {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = Math.random() > 0.9 ? '#f00' : '#0f0';
+                ctx.font = fontSize + 'px monospace';
+
+                for (let i = 0; i < rainDrops.length; i++) {
+                    const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+                    ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
+                    if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.975) rainDrops[i] = 0;
+                    rainDrops[i]++;
+                }
+            }, 30);
+
+            // --- 瘋狂彈窗邏輯 ---
+            setInterval(() => {
+                const container = document.getElementById('popups-container');
+                const popup = document.createElement('div');
+                popup.className = 'popup';
+                popup.style.top = Math.random() * (window.innerHeight - 150) + 'px';
+                popup.style.left = Math.random() * (window.innerWidth - 250) + 'px';
+                popup.innerHTML = `<div class="popup-header">FATAL_ERROR</div>PAY RANSOM OR LOSE EVERYTHING`;
+                container.appendChild(popup);
+                if (container.childElementCount > 50) container.removeChild(container.firstChild);
+            }, 100);
+
+            // --- 背景狂閃 ---
+            setInterval(() => {
+                document.body.style.backgroundColor = Math.random() > 0.5 ? "#500" : "#000";
+            }, 50);
+        }
+    </script>
+</body>
+</html>
